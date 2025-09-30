@@ -37,25 +37,8 @@ api_router = APIRouter(prefix="/api")
 security = HTTPBearer()
 
 # Pydantic Models
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_pydantic_core_schema__(cls, source_type, handler):
-        return {
-            'type': 'no_info_after_validator_function',
-            'function': cls.validate,
-            'schema': {
-                'type': 'str',
-            },
-        }
-
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid objectid")
-        return ObjectId(v)
-
 class AuctionItem(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[str] = Field(alias="_id", default=None)
     item_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
@@ -76,11 +59,9 @@ class AuctionItem(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class Auction(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[str] = Field(alias="_id", default=None)
     auction_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     description: str
@@ -97,11 +78,9 @@ class Auction(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class User(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[str] = Field(alias="_id", default=None)
     user_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: str
     full_name: str
@@ -114,8 +93,6 @@ class User(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class UserRegister(BaseModel):
     email: str
