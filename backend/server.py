@@ -315,6 +315,10 @@ async def login_user(user_credentials: UserLogin):
 @api_router.get("/auctions", response_model=List[Auction])
 async def get_auctions():
     auctions = await db.auctions.find().sort("start_date", 1).to_list(100)
+    # Convert ObjectId to string
+    for auction in auctions:
+        if "_id" in auction:
+            auction["_id"] = str(auction["_id"])
     return [Auction(**auction) for auction in auctions]
 
 @api_router.get("/auctions/{auction_id}", response_model=Auction)
@@ -322,11 +326,17 @@ async def get_auction_detail(auction_id: str):
     auction = await db.auctions.find_one({"auction_id": auction_id})
     if not auction:
         raise HTTPException(status_code=404, detail="Auction not found")
+    if "_id" in auction:
+        auction["_id"] = str(auction["_id"])
     return Auction(**auction)
 
 @api_router.get("/auctions/{auction_id}/items", response_model=List[AuctionItem])
 async def get_auction_items(auction_id: str):
     items = await db.auction_items.find({"auction_id": auction_id}).to_list(100)
+    # Convert ObjectId to string
+    for item in items:
+        if "_id" in item:
+            item["_id"] = str(item["_id"])
     return [AuctionItem(**item) for item in items]
 
 @api_router.get("/items/{item_id}", response_model=AuctionItem)
@@ -334,6 +344,8 @@ async def get_item_detail(item_id: str):
     item = await db.auction_items.find_one({"item_id": item_id})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
+    if "_id" in item:
+        item["_id"] = str(item["_id"])
     return AuctionItem(**item)
 
 # Search endpoints
