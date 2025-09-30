@@ -39,18 +39,20 @@ security = HTTPBearer()
 # Pydantic Models
 class PyObjectId(ObjectId):
     @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
+    def __get_pydantic_core_schema__(cls, source_type, handler):
+        return {
+            'type': 'no_info_after_validator_function',
+            'function': cls.validate,
+            'schema': {
+                'type': 'str',
+            },
+        }
 
     @classmethod
     def validate(cls, v):
         if not ObjectId.is_valid(v):
             raise ValueError("Invalid objectid")
         return ObjectId(v)
-
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
 
 class AuctionItem(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
