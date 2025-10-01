@@ -1,0 +1,52 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a365d;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2d5a87;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#004b93;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="overlayGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#bgGradient)"/>
+  
+  <!-- Geometric pattern -->
+  <g opacity="0.1">
+    <circle cx="100" cy="80" r="40" fill="#ffffff"/>
+    <circle cx="300" cy="120" r="30" fill="#ffffff"/>
+    <circle cx="200" cy="200" r="35" fill="#ffffff"/>
+    <circle cx="350" cy="250" r="25" fill="#ffffff"/>
+    <circle cx="50" cy="220" r="20" fill="#ffffff"/>
+  </g>
+  
+  <!-- Auction hammer icon -->
+  <g transform="translate(170, 100)">
+    <rect x="0" y="30" width="60" height="8" rx="4" fill="#26B4E4" opacity="0.8"/>
+    <rect x="25" y="0" width="10" height="50" rx="5" fill="#26B4E4" opacity="0.8"/>
+    <circle cx="30" cy="45" r="15" fill="#ffffff" opacity="0.9"/>
+    <circle cx="30" cy="45" r="10" fill="#26B4E4"/>
+  </g>
+  
+  <!-- Decorative elements -->
+  <g opacity="0.6">
+    <rect x="50" y="50" width="2" height="20" fill="#26B4E4"/>
+    <rect x="60" y="45" width="2" height="30" fill="#26B4E4"/>
+    <rect x="70" y="40" width="2" height="40" fill="#26B4E4"/>
+    
+    <rect x="330" y="180" width="2" height="25" fill="#26B4E4"/>
+    <rect x="340" y="175" width="2" height="35" fill="#26B4E4"/>
+    <rect x="350" y="170" width="2" height="45" fill="#26B4E4"/>
+  </g>
+  
+  <!-- Subtle text -->
+  <text x="200" y="250" text-anchor="middle" fill="#ffffff" opacity="0.4" font-family="Arial, sans-serif" font-size="14" font-weight="300">
+    SUBASTA
+  </text>
+  
+  <!-- Overlay for better text contrast -->
+  <rect width="400" height="300" fill="url(#overlayGradient)"/>
+</svg>

@@ -382,6 +382,26 @@ async def search_auctions(
     auctions = await db.auctions.find(query).to_list(100)
     return [Auction(**auction) for auction in auctions]
 
+# Public endpoints for auctions
+@api_router.get("/auctions")
+async def get_public_auctions():
+    auctions = await db.auctions.find({}).to_list(100)
+    return [Auction(**auction) for auction in auctions]
+
+@api_router.get("/auctions/{auction_id}")
+async def get_auction_detail(auction_id: str):
+    auction = await db.auctions.find_one({"auction_id": auction_id})
+    if not auction:
+        raise HTTPException(status_code=404, detail="Auction not found")
+    return Auction(**auction)
+
+@api_router.get("/auctions/{auction_id}/items")
+async def get_auction_items(auction_id: str):
+    items = await db.auction_items.find({"auction_id": auction_id}).to_list(1000)
+    if not items:
+        return []
+    return [AuctionItem(**item) for item in items]
+
 # User profile endpoints
 @api_router.get("/user/profile", response_model=User)
 async def get_user_profile(current_user: User = Depends(get_current_user)):

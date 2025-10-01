@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#134E5E" />
+      <stop offset="100%" stop-color="#71B280" />
+    </linearGradient>
+    <filter id="blur-filter" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bg-gradient)" />
+  
+  <!-- Abstract auction items -->
+  <g opacity="0.8">
+    <!-- Artwork frame -->
+    <rect x="150" y="150" width="150" height="200" fill="#F5F5F5" stroke="#FFFFFF" stroke-width="10" />
+    <rect x="170" y="170" width="110" height="160" fill="#134E5E" opacity="0.5" />
+    
+    <!-- Vase -->
+    <path d="M400,350 C400,300 450,300 450,250 C450,200 400,200 400,150 L500,150 C500,200 450,200 450,250 C450,300 500,300 500,350 L400,350 Z" fill="#F5F5F5" />
+    
+    <!-- Antique chair -->
+    <path d="M600,350 L620,200 L680,200 L700,350 Z" fill="none" stroke="#F5F5F5" stroke-width="5" />
+    <path d="M620,250 L700,250" stroke="#F5F5F5" stroke-width="5" />
+    <path d="M650,200 L650,150" stroke="#F5F5F5" stroke-width="5" />
+    <path d="M630,150 L670,150" stroke="#F5F5F5" stroke-width="5" />
+    <path d="M620,350 L600,400" stroke="#F5F5F5" stroke-width="5" />
+    <path d="M700,350 L720,400" stroke="#F5F5F5" stroke-width="5" />
+  </g>
+  
+  <!-- Auction elements -->
+  <g fill="#FFFFFF" opacity="0.9">
+    <!-- Gavel -->
+    <rect x="300" y="400" width="100" height="20" rx="5" fill="#FFFFFF" />
+    <rect x="340" y="320" width="20" height="80" fill="#FFFFFF" />
+    <path d="M340,320 a20,20 0 0,1 20,0 v-40 a20,20 0 0,0 -20,0 z" fill="#FFFFFF" />
+    
+    <!-- Price tag -->
+    <path d="M500,400 h80 l20,20 v80 h-100 z" fill="#FFFFFF" />
+    <circle cx="530" cy="430" r="10" fill="#134E5E" />
+    <path d="M510,450 h80 v8 h-80 z" fill="#134E5E" opacity="0.7" />
+    <path d="M510,470 h80 v8 h-80 z" fill="#134E5E" opacity="0.7" />
+  </g>
+  
+  <!-- Overlay elements -->
+  <g opacity="0.3">
+    <circle cx="200" cy="100" r="80" fill="#FFFFFF" filter="url(#blur-filter)" />
+    <circle cx="600" cy="150" r="100" fill="#FFFFFF" filter="url(#blur-filter)" />
+    <circle cx="400" cy="500" r="120" fill="#FFFFFF" filter="url(#blur-filter)" />
+  </g>
+</svg>

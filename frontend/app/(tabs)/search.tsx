@@ -14,7 +14,6 @@ import { router } from 'expo-router';
 
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { auctionService, Auction } from '@/services/auctionService';
 
 const categories = [
@@ -111,7 +110,13 @@ export default function SearchScreen() {
         </Text>
       </View>
 
-      <ScrollView style={styles.filtersContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={[
+          styles.filtersContainer,
+          { flex: showResults ? 0 : 1 } // ← dinámico aquí
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Categories */}
         <View style={styles.filterSection}>
           <Text style={[styles.filterTitle, { color: colors.text }]}>Categoría</Text>
@@ -327,7 +332,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   filtersContainer: {
-    flex: showResults ? 0 : 1,
     padding: 20,
   },
   filterSection: {

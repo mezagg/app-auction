@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A2A6C" />
+      <stop offset="50%" stop-color="#B21F1F" />
+      <stop offset="100%" stop-color="#FDBB2D" />
+    </linearGradient>
+    <filter id="blur-filter" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bg-gradient)" />
+  
+  <!-- Car silhouettes -->
+  <!-- Luxury sedan -->
+  <path d="M100,350 C120,350 130,330 160,330 L400,330 C430,330 440,350 460,350 L480,350 C490,350 490,360 480,360 L100,360 C90,360 90,350 100,350 Z" fill="#FFFFFF" opacity="0.8" />
+  <path d="M160,330 L180,300 L380,300 L400,330 Z" fill="#FFFFFF" opacity="0.8" />
+  <circle cx="180" cy="350" r="20" fill="#333333" stroke="#FFFFFF" stroke-width="3" />
+  <circle cx="400" cy="350" r="20" fill="#333333" stroke="#FFFFFF" stroke-width="3" />
+  
+  <!-- SUV -->
+  <path d="M500,380 C520,380 530,360 560,360 L700,360 C730,360 740,380 760,380 L780,380 C790,380 790,390 780,390 L500,390 C490,390 490,380 500,380 Z" fill="#FFFFFF" opacity="0.7" />
+  <path d="M560,360 L580,320 L680,320 L700,360 Z" fill="#FFFFFF" opacity="0.7" />
+  <circle cx="560" cy="380" r="20" fill="#333333" stroke="#FFFFFF" stroke-width="3" />
+  <circle cx="720" cy="380" r="20" fill="#333333" stroke="#FFFFFF" stroke-width="3" />
+  
+  <!-- Sports car -->
+  <path d="M150,450 C170,450 180,430 210,430 L350,430 C380,430 390,450 410,450 L430,450 C440,450 440,460 430,460 L150,460 C140,460 140,450 150,450 Z" fill="#FFFFFF" opacity="0.9" />
+  <path d="M210,430 L220,410 L340,410 L350,430 Z" fill="#FFFFFF" opacity="0.9" />
+  <circle cx="210" cy="450" r="15" fill="#333333" stroke="#FFFFFF" stroke-width="3" />
+  <circle cx="370" cy="450" r="15" fill="#333333" stroke="#FFFFFF" stroke-width="3" />
+  
+  <!-- Truck -->
+  <path d="M450,450 C470,450 480,430 510,430 L650,430 C680,430 690,450 710,450 L730,450 C740,450 740,460 730,460 L450,460 C440,460 440,450 450,450 Z" fill="#FFFFFF" opacity="0.6" />
+  <path d="M510,430 L510,380 L650,380 L650,430 Z" fill="#FFFFFF" opacity="0.6" />
+  <circle cx="510" cy="450" r="20" fill="#333333" stroke="#FFFFFF" stroke-width="3" />
+  <circle cx="650" cy="450" r="20" fill="#333333" stroke="#FFFFFF" stroke-width="3" />
+  
+  <!-- Overlay elements -->
+  <g opacity="0.3">
+    <circle cx="200" cy="150" r="80" fill="#FFFFFF" filter="url(#blur-filter)" />
+    <circle cx="600" cy="200" r="100" fill="#FFFFFF" filter="url(#blur-filter)" />
+    <circle cx="400" cy="100" r="120" fill="#FFFFFF" filter="url(#blur-filter)" />
+  </g>
+  
+  <!-- Auction elements -->
+  <g fill="#FFFFFF" opacity="0.8">
+    <!-- Gavel -->
+    <rect x="300" y="150" width="80" height="15" rx="5" fill="#FFFFFF" />
+    <rect x="335" y="100" width="10" height="50" fill="#FFFFFF" />
+    <path d="M335,100 a10,10 0 0,1 10,0 v-30 a10,10 0 0,0 -10,0 z" fill="#FFFFFF" />
+    
+    <!-- Price tag -->
+    <path d="M500,150 h60 l15,15 v60 h-75 z" fill="#FFFFFF" />
+    <circle cx="520" cy="170" r="8" fill="#B21F1F" />
+    <path d="M510,190 h55 v5 h-55 z" fill="#1A2A6C" />
+    <path d="M510,205 h55 v5 h-55 z" fill="#1A2A6C" />
+  </g>
+</svg>

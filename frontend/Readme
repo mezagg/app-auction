@@ -1,0 +1,13 @@
+cd /Users/gerardomeza/projects/hilco/app-auction/backend && pip install -r requirements.txt
+
+cd /Users/gerardomeza/projects/hilco/app-auction/backend && python server.py
+
+pip install fastapi uvicorn "python-dotenv" motor bcrypt PyJWT
+
+npm install
+
+iniciar mongo manualmente
+mongod --config /opt/homebrew/etc/mongod.conf
+
+
+la vista aun no lo veo moderno. el menu muy plano, hazla moderna  similar a la que te propuse en la imagen, el logo mas grande del lado izquierdo y reducelo al hacer scroll 

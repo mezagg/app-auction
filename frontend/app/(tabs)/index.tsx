@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Text,
   View,
@@ -6,17 +6,25 @@ import {
   TouchableOpacity,
   Alert,
   RefreshControl,
+  Animated,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import { router } from 'expo-router';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { auctionService } from '@/services/auctionService';
+import { AnimatedAuctionCard } from '@/components/AnimatedAuctionCard';
+import { FeaturedCarousel } from '@/components/FeaturedCarousel';
+import { FilterTabs, FilterType } from '@/components/FilterTabs';
+import { HamburgerMenu } from '@/components/HamburgerMenu';
 
 type Auction = {
   auction_id: string;
@@ -38,13 +46,25 @@ export default function AuctionsScreen() {
   const colors = Colors[colorScheme ?? 'light'];
   
   const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [filteredAuctions, setFilteredAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<FilterType>('todas');
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  
+  // Animation values for header
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const headerHeight = useRef(new Animated.Value(120)).current;
+  const logoScale = useRef(new Animated.Value(1)).current;
+  const logoOpacity = useRef(new Animated.Value(1)).current;
+  const titleOpacity = useRef(new Animated.Value(1)).current;
+  const showText = useRef(new Animated.Value(0)).current;
 
   const loadAuctions = async () => {
     try {
       const data = await auctionService.getAuctions();
       setAuctions(data);
+      filterAuctions(data, activeFilter);
     } catch (error) {
       Alert.alert('Error', 'No se pudieron cargar las subastas');
       console.error(error);
@@ -53,26 +73,147 @@ export default function AuctionsScreen() {
     }
   };
 
+  const filterAuctions = (auctionData: Auction[], filter: FilterType) => {
+    let filtered = auctionData;
+    
+    switch (filter) {
+      case 'proximas':
+        filtered = auctionData.filter(auction => auction.status === 'proxima');
+        break;
+      case 'anteriores':
+        filtered = auctionData.filter(auction => auction.status === 'finalizada');
+        break;
+      case 'negociadas':
+        filtered = auctionData.filter(auction => 
+          auction.reason === 'venta_negociada' || 
+          auction.reason.toLowerCase().includes('negociad')
+        );
+        break;
+      case 'todas':
+      default:
+        filtered = auctionData;
+        break;
+    }
+    
+    setFilteredAuctions(filtered);
+  };
+
+  const handleFilterChange = (filter: FilterType) => {
+    setActiveFilter(filter);
+    filterAuctions(auctions, filter);
+  };
+
+  // Scroll handler for header animation
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    {
+      useNativeDriver: false,
+      listener: (event: any) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        
+        // Animate header elements based on scroll
+        if (offsetY > 50) {
+          Animated.parallel([
+            Animated.timing(logoOpacity, {
+              toValue: 0,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(showText, {
+              toValue: 1,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+          ]).start();
+        } else {
+          Animated.parallel([
+            Animated.timing(logoOpacity, {
+              toValue: 1,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(showText, {
+              toValue: 0,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+          ]).start();
+        }
+      },
+    }
+  );
+
+  // Menu handlers
+  const handleMenuToggle = () => {
+    setIsMenuVisible(!isMenuVisible);
+  };
+
+  const handleMenuClose = () => {
+    setIsMenuVisible(false);
+  };
+
+  const handleLogin = () => {
+    setIsMenuVisible(false);
+    Alert.alert('Login', 'Función de login próximamente');
+  };
+
+  const handleFAQ = () => {
+    setIsMenuVisible(false);
+    Alert.alert('FAQ', 'Preguntas frecuentes próximamente');
+  };
+
+  const handleSupport = () => {
+    setIsMenuVisible(false);
+    Alert.alert('Soporte', 'Contacto de soporte próximamente');
+  };
+
+  const handleMessages = () => {
+    Alert.alert('Mensajes', 'Bandeja de mensajes próximamente');
+  };
+
   useEffect(() => {
     loadAuctions();
   }, []);
 
-  const onRefresh = async () => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
-    await loadAuctions();
-    setRefreshing(false);
+    fetchAuctions();
+  }, []);
+
+  const fetchAuctions = async () => {
+    try {
+      setLoading(true);
+      const data = await auctionService.getAuctions();
+      
+      // Animación para la lista completa al cargar
+      const fadeAnim = new Animated.Value(0);
+      setAuctions(data);
+      filterAuctions(data, activeFilter);
+      
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true
+      }).start();
+      
+    } catch (error) {
+      console.error('Error fetching auctions:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'activa':
-        return '#10B981'; // Green
+        return colors.success; // Green
       case 'proxima':
-        return '#F59E0B'; // Amber
+        return colors.primary; // Primary blue
       case 'finalizada':
-        return '#6B7280'; // Gray
+        return colors.secondary; // Gray
       default:
-        return colors.text;
+        return colors.secondary;
     }
   };
 
@@ -97,6 +238,17 @@ export default function AuctionsScreen() {
         return 'Renovación de Flota';
       default:
         return reason;
+    }
+  };
+  
+  const getAuctionImage = (reason: string) => {
+    switch (reason) {
+      case 'cierre_empresa':
+        return require('@/assets/images/auction-business.jpg');
+      case 'renovacion_flotilla':
+        return require('@/assets/images/auction-vehicles.jpg');
+      default:
+        return require('@/assets/images/auction-default.jpg');
     }
   };
 
@@ -150,7 +302,7 @@ export default function AuctionsScreen() {
       </View>
       
       <View style={styles.cardFooter}>
-        <View style={styles.itemsContainer}>
+        <View>
           <Text style={[styles.itemCount, { color: colors.tint }]}>
             {item.total_items} artículos
           </Text>
@@ -176,29 +328,102 @@ export default function AuctionsScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Subastas Elite
-        </Text>
-        <Text style={[styles.headerSubtitle, { color: colors.text }]}>
-          Vehículos, Camiones y Equipo Médico
-        </Text>
-      </View>
+      {/* Animated Header */}
+      <Animated.View style={[styles.header, { backgroundColor: colors.primaryDark }]}>
+        <View style={styles.headerContent}>
+          {/* Hamburger Menu Button */}
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={handleMenuToggle}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.hamburgerLine, { backgroundColor: colors.white }]} />
+            <View style={[styles.hamburgerLine, { backgroundColor: colors.white }]} />
+            <View style={[styles.hamburgerLine, { backgroundColor: colors.white }]} />
+          </TouchableOpacity>
+
+          {/* Logo and Text Container */}
+          <View style={styles.centerContent}>
+            <Animated.View style={[styles.logoContainer, { opacity: logoOpacity }]}>
+              <Image
+                source={require('@/assets/images/logo.png')}
+                style={styles.logo}
+                contentFit="contain"
+              />
+            </Animated.View>
+            
+            <Animated.View style={[styles.textContainer, { opacity: showText }]}>
+              <Text style={[styles.headerTitle, { color: colors.white }]}>
+                Subastas HILCO
+              </Text>
+            </Animated.View>
+          </View>
+
+          {/* Messages Button */}
+          <TouchableOpacity
+            style={styles.messagesButton}
+            onPress={handleMessages}
+            activeOpacity={0.7}
+          >
+            <IconSymbol name="heart" size={24} color={colors.white} />
+            <View style={[styles.messageBadge, { backgroundColor: colors.accent.red }]}>
+              <Text style={styles.messageBadgeText}>3</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
       
       <FlashList
-        data={auctions}
-        renderItem={renderAuction}
+        data={filteredAuctions}
+        renderItem={({ item, index }) => (
+          <AnimatedAuctionCard 
+            item={{
+              id: item.auction_id,
+              title: item.title,
+              description: item.description,
+              start_date: item.start_date,
+              end_date: item.end_date,
+              status: item.status,
+              reason: item.reason,
+              location: item.location,
+              category: item.reason, // Using reason as category for now
+              registration_fee: item.registration_fee,
+              image_url: undefined // No image URL in current data structure
+            }} 
+            index={index} 
+          />
+        )}
         keyExtractor={(item) => item.auction_id}
-        estimatedItemSize={200}
-        contentContainerStyle={styles.listContainer}
+        ListHeaderComponent={() => (
+          <View>
+            <FeaturedCarousel />
+            <FilterTabs 
+              activeFilter={activeFilter}
+              onFilterChange={handleFilterChange}
+            />
+          </View>
+        )}
+        contentContainerStyle={styles.list}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.tint}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
           />
         }
         showsVerticalScrollIndicator={false}
+      />
+
+      {/* Hamburger Menu */}
+      <HamburgerMenu
+        isVisible={isMenuVisible}
+        onClose={handleMenuClose}
+        onLogin={handleLogin}
+        onFAQ={handleFAQ}
+        onSupport={handleSupport}
       />
     </SafeAreaView>
   );
@@ -219,14 +444,81 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,0.1)',
   },
-  headerTitle: {
-    fontSize: 28,
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  menuButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  hamburgerLine: {
+    width: 20,
+    height: 2,
+    marginVertical: 2,
+    borderRadius: 1,
+  },
+  centerContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  logoContainer: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textContainer: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  messagesButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    position: 'relative',
+  },
+  messageBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  messageBadgeText: {
+    color: 'white',
+    fontSize: 10,
     fontWeight: 'bold',
   },
+  logo: {
+    width: 60,
+    height: 60,
+    marginRight: 12,
+  },
+  headerTextContainer: {
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 2,
+    textAlign: 'center',
+  },
   headerSubtitle: {
-    fontSize: 16,
-    opacity: 0.7,
-    marginTop: 4,
+    fontSize: 14,
+    textAlign: 'center',
+    opacity: 0.9,
   },
   listContainer: {
     padding: 16,
@@ -295,23 +587,84 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.1)',
-  },
-  itemsContainer: {
-    flex: 1,
+    padding: 12,
+    borderRadius: 10,
+    marginTop: 8,
   },
   itemCount: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
   },
   registrationFee: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '700',
   },
   loadingText: {
     fontSize: 16,
+  },
+  list: {
+    padding: 16,
+  },
+  card: {
+    marginBottom: 20,
+    borderRadius: 16,
+    overflow: 'hidden',
+    height: 300,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  cardBackground: {
+    flex: 1,
+  },
+  cardBackgroundImage: {
+    borderRadius: 16,
+  },
+  cardOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  cardContent: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'space-between',
+  },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    flex: 1,
+    marginRight: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  cardDescription: {
+    fontSize: 15,
+    color: '#FFFFFF',
+    marginBottom: 16,
+    lineHeight: 22,
+    opacity: 0.9,
+  },
+  cardDetails: {
+    marginBottom: 16,
+    padding: 12,
+    borderRadius: 12,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  detailText: {
+    fontSize: 15,
+    color: '#FFFFFF',
+    marginLeft: 10,
+    fontWeight: '500',
   },
 });
