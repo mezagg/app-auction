@@ -153,7 +153,7 @@ export default function ProfileScreen() {
         <View style={styles.centerContainer}>
           <IconSymbol name="person.fill" size={64} color={colors.icon} />
           <Text style={[styles.welcomeTitle, { color: colors.text }]}>
-            ¡Bienvenido a Subastas Elite!
+            ¡Bienvenido a Subastas Hilco Global Mx!
           </Text>
           <Text style={[styles.welcomeSubtitle, { color: colors.text }]}>
             Inicia sesión o crea una cuenta para participar en nuestras subastas exclusivas
