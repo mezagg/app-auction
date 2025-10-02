@@ -7,8 +7,9 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { ThemeProvider } from '@/context/ThemeContext';
 
-export default function TabLayout() {
+function TabsInner() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'dark'];
 
@@ -103,5 +104,13 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+  );
+}
+
+export default function TabLayout() {
+  return (
+    <ThemeProvider>
+      <TabsInner />
+    </ThemeProvider>
   );
 }

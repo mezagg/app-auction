@@ -247,14 +247,15 @@ export default function AuctionsScreen() {
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
           <Text style={styles.statusText}>{getStatusText(item.status)}</Text>
         </View>
-        <Text style={[styles.reasonText, { color: colors.text }]}>
+        <Text style={[styles.auctionTitle, { color: colors.text }]} numberOfLines={2}>
           {getReasonText(item.reason)}
         </Text>
       </View>
       
+      {/* Muestra el título de la subasta, limitado a 2 líneas 
       <Text style={[styles.auctionTitle, { color: colors.text }]} numberOfLines={2}>
-        {item.title}
-      </Text>
+        {item.title} 
+      </Text>*/}
       
       <Text style={[styles.companyName, { color: colors.tint }]}>
         {item.company_name}
@@ -330,7 +331,7 @@ export default function AuctionsScreen() {
             
             <Animated.View style={[styles.textContainer, { opacity: showText }]}>
               <Text style={[styles.headerTitle, { color: colors.white }]}>
-                Subastas HILCO
+                Subastas HILCO GLOBAL MX
               </Text>
             </Animated.View>
           </View>

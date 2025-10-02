@@ -8,11 +8,13 @@ import {
   Dimensions,
   SafeAreaView,
   ScrollView,
+  Switch,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useThemeContext } from '@/context/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -58,6 +60,8 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'dark'];
+  const { theme, toggleTheme, setTheme } = useThemeContext();
+  const isDark = theme === 'dark';
   
   const slideAnim = useRef(new Animated.Value(-width)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
@@ -176,22 +180,38 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
               {/* Divider */}
               <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
-              {/* Additional Options */}
-              <MenuItem
-                icon="star.fill"
-                title="Configuración"
-                subtitle="Personaliza tu experiencia"
-                onPress={() => {}}
-                colors={colors}
+            {/* Additional Options */}
+            <MenuItem
+              icon="star.fill"
+              title="Configuración"
+              subtitle="Personaliza tu experiencia"
+              onPress={() => {}}
+              colors={colors}
+            />
+            {/* Theme Toggle */}
+            <View style={[styles.menuItem, { marginHorizontal: 10, marginVertical: 4 }]}>
+              <View style={[styles.menuItemIcon, { backgroundColor: colors.accent.blue + '20' }]}>
+                <IconSymbol name={isDark ? 'star.fill' : 'star'} size={24} color={colors.accent.blue} />
+              </View>
+              <View style={styles.menuItemContent}>
+                <Text style={[styles.menuItemTitle, { color: colors.text }]}>Tema oscuro</Text>
+                <Text style={[styles.menuItemSubtitle, { color: colors.secondary }]}>Cambia entre claro y oscuro</Text>
+              </View>
+              <Switch
+                value={isDark}
+                onValueChange={(val) => setTheme(val ? 'dark' : 'light')}
+                trackColor={{ false: '#bbb', true: colors.accent.blue + '55' }}
+                thumbColor={isDark ? colors.accent.blue : '#f4f3f4'}
               />
-              
-              <MenuItem
-                icon="checkmark"
-                title="Acerca de"
-                subtitle="Información de la aplicación"
-                onPress={() => {}}
-                colors={colors}
-              />
+            </View>
+            
+            <MenuItem
+              icon="checkmark"
+              title="Acerca de"
+              subtitle="Información de la aplicación"
+              onPress={() => {}}
+              colors={colors}
+            />
             </ScrollView>
 
             {/* Footer */}

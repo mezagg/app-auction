@@ -24,8 +24,16 @@ export default function AuctionDetailScreen() {
   const colors = Colors[colorScheme ?? 'light'];
   const { id } = useLocalSearchParams<{ id: string }>();
   const { width } = useWindowDimensions();
-  const numColumns = width >= 1200 ? 4 : width >= 800 ? 3 : 2;
-  const columnWidthPercent = numColumns >= 4 ? '24%' : numColumns === 3 ? '32%' : '48%';
+  // Medir el ancho real del contenedor para decidir columnas en móvil
+  const [gridWidth, setGridWidth] = useState<number | null>(null);
+  const effectiveWidth = gridWidth ?? width;
+  const numColumns =
+    effectiveWidth >= 1200 ? 4 : effectiveWidth >= 800 ? 3 : effectiveWidth >= 480 ? 2 : 1;
+  const columnWidthPercent =
+    numColumns === 4 ? '24%'
+    : numColumns === 3 ? '32%'
+    : numColumns === 2 ? '48%'
+    : '100%';
   
   const [auction, setAuction] = useState<Auction | null>(null);
   const [items, setItems] = useState<AuctionItem[]>([]);
@@ -290,11 +298,21 @@ export default function AuctionDetailScreen() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             Artículos en Subasta ({items.length})
           </Text>
-          <View style={styles.gridContainer}>
+          <View
+            style={styles.gridContainer}
+            onLayout={(e) => setGridWidth(e.nativeEvent.layout.width)}
+          >
             {items.map((item) => (
               <TouchableOpacity
                 key={item.item_id}
-                style={[styles.itemCard, { width: columnWidthPercent, backgroundColor: colors.cardBackground }]}
+                style={[
+                  styles.itemCard,
+                  {
+                    width: columnWidthPercent,
+                    backgroundColor: colors.cardBackground,
+                    borderColor: colors.accent.blue + '20',
+                  },
+                ]}
                 onPress={() => router.push(`/item-detail/${item.item_id}`)}
                 activeOpacity={0.7}
               >
@@ -503,6 +521,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
+  // Contenedor de grid para los ítems
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
   gridContent: {
     paddingBottom: 8,
   },
@@ -511,14 +535,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   itemCard: {
-    flex: 1,
     minWidth: 0,
     padding: 16,
     borderRadius: 12,
     marginHorizontal: 6,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
   },
   itemHeader: {
     flexDirection: 'row',

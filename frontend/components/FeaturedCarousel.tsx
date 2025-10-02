@@ -4,7 +4,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  Dimensions,
+  useWindowDimensions,
   StyleSheet,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -12,10 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
-const { width: screenWidth } = Dimensions.get('window');
-const CARD_WIDTH = screenWidth * 0.85;
-const CARD_SPACING = 16;
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 interface FeaturedItem {
   id: string;
@@ -53,6 +50,14 @@ export const FeaturedCarousel: React.FC = () => {
   const colors = Colors[colorScheme ?? 'dark'];
   const scrollViewRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { width } = useWindowDimensions();
+  const numVisible = width < 480 ? 1 : width < 768 ? 2 : width < 1024 ? 3 : 4;
+  const spacing = width < 480 ? 8 : width < 768 ? 12 : 16;
+  const peek = numVisible === 1 ? 24 : 0;
+  const cardWidth = Math.max(
+    240,
+    Math.floor((width - (numVisible + 1) * spacing) / numVisible) - (numVisible === 1 ? peek : 0)
+  );
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -82,7 +87,7 @@ export const FeaturedCarousel: React.FC = () => {
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / (CARD_WIDTH + CARD_SPACING));
+    const index = Math.round(scrollPosition / (cardWidth + spacing));
     setCurrentIndex(index);
   };
 
@@ -98,10 +103,13 @@ export const FeaturedCarousel: React.FC = () => {
         pagingEnabled={false}
         showsHorizontalScrollIndicator={false}
         decelerationRate="fast"
-        snapToInterval={CARD_WIDTH + CARD_SPACING}
+        snapToInterval={cardWidth + spacing}
         snapToAlignment="start"
-        contentInset={{ left: CARD_SPACING, right: CARD_SPACING }}
-        contentContainerStyle={styles.scrollContainer}
+        contentInset={{ left: spacing / 2, right: Math.max(spacing / 2 - peek, 0) }}
+        contentContainerStyle={[
+          styles.scrollContainer,
+          { paddingLeft: spacing / 2, paddingRight: Math.max(spacing / 2 - peek, 0) }
+        ]}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
@@ -110,7 +118,7 @@ export const FeaturedCarousel: React.FC = () => {
             key={item.id}
             style={[
               styles.card,
-              { backgroundColor: colors.cardBackground }
+              { backgroundColor: colors.cardBackground, width: cardWidth, marginHorizontal: spacing / 2 }
             ]}
             onPress={() => handleCardPress(item)}
             activeOpacity={0.95}
@@ -168,6 +176,21 @@ export const FeaturedCarousel: React.FC = () => {
         ))}
       </ScrollView>
 
+      {/* Hint de más tarjetas al borde derecho */}
+      {featuredItems.length > numVisible && currentIndex < featuredItems.length - numVisible && (
+        <View style={styles.rightHint} pointerEvents="none">
+          <LinearGradient
+            colors={["transparent", colors.background]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.rightGradient}
+          />
+          <View style={[styles.hintBubble, { backgroundColor: colors.cardBackground }]}> 
+            <IconSymbol name="chevron.right" size={16} color={colors.icon} />
+          </View>
+        </View>
+      )}
+
       {/* Pagination Dots */}
       <View style={styles.pagination}>
         {featuredItems.map((_, index) => (
@@ -192,15 +215,15 @@ export const FeaturedCarousel: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 24,
+    position: 'relative',
   },
   scrollContainer: {
-    paddingHorizontal: CARD_SPACING / 2,
+    paddingHorizontal: 0,
   },
   card: {
-    width: CARD_WIDTH,
     height: 320,
     borderRadius: 20,
-    marginHorizontal: CARD_SPACING / 2,
+    marginHorizontal: 0,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -210,6 +233,33 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
     overflow: 'hidden',
+  },
+  rightHint: {
+    position: 'absolute',
+    top: 0,
+    bottom: 40,
+    right: 0,
+    width: 56,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+  rightGradient: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  hintBubble: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
   },
   imageContainer: {
     height: 160,

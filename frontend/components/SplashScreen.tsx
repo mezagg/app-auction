@@ -105,7 +105,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           
           <Animated.View style={[styles.textContainer, { opacity: textOpacity }]}>
             <Text style={[styles.title, { color: colors.white }]}>
-              Subastas HILCO
+              Subastas HILCO GLOBAL MX
             </Text>
             <Text style={[styles.subtitle, { color: colors.accent.blue }]}>
               Plataforma de Subastas Profesional
