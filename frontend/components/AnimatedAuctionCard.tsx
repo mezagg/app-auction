@@ -6,6 +6,8 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
+import { Image } from 'expo-image';
+import Svg, { Path, Rect } from 'react-native-svg';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Colors } from '@/constants/Colors';
@@ -23,6 +25,7 @@ interface Auction {
   category: string;
   registration_fee: number;
   image_url?: string;
+  lots_count: number; // Nuevo campo para número de lotes
 }
 
 interface AnimatedAuctionCardProps {
@@ -82,26 +85,44 @@ export const AnimatedAuctionCard: React.FC<AnimatedAuctionCardProps> = ({ item, 
 
   const getCategoryColor = (category: string) => {
     const categoryMap: { [key: string]: string } = {
-      'inmuebles': colors.realEstateAuction,
-      'vehículos': colors.vehicleAuction,
-      'real_estate': colors.realEstateAuction,
-      'vehicles': colors.vehicleAuction,
-      'maquinaria': colors.accent.orange,
-      'machinery': colors.accent.orange,
+      'inmuebles': '#26B4E4',
+      'vehículos': '#26B4E4',
+      'real_estate': '#26B4E4',
+      'vehicles': '#26B4E4',
+      'maquinaria': '#26B4E4',
+      'machinery': '#26B4E4',
     };
-    return categoryMap[category.toLowerCase()] || colors.accent.purple;
+    return categoryMap[category.toLowerCase()] || '#26B4E4';
   };
 
   const getCategoryIcon = (category: string) => {
-    const iconMap: { [key: string]: string } = {
-      'inmuebles': '🏠',
-      'vehículos': '🚗',
-      'real_estate': '🏠',
-      'vehicles': '🚗',
-      'maquinaria': '⚙️',
-      'machinery': '⚙️',
-    };
-    return iconMap[category.toLowerCase()] || '📦';
+    const categoryLower = category.toLowerCase();
+    
+    if (categoryLower.includes('vehículo') || categoryLower.includes('vehicle') || categoryLower.includes('auto')) {
+      return (
+        <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <Path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5S5.67 13 6.5 13 8 13.67 8 14.5 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5S16.67 13 17.5 13 19 13.67 19 14.5 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z" fill="white"/>
+        </Svg>
+      );
+    }
+    
+    if (categoryLower.includes('inmueble') || categoryLower.includes('real_estate') || categoryLower.includes('casa')) {
+      return (
+        <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <Path d="M10 20V14H14V20H19V12H22L12 3L2 12H5V20H10Z" fill="white"/>
+        </Svg>
+      );
+    }
+    
+    // Ícono general por defecto
+    return (
+      <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <Rect x="3" y="3" width="7" height="7" rx="2" fill="white" stroke="white" strokeWidth="1"/>
+        <Rect x="14" y="3" width="7" height="7" rx="2" fill="white" stroke="white" strokeWidth="1"/>
+        <Rect x="3" y="14" width="7" height="7" rx="2" fill="white" stroke="white" strokeWidth="1"/>
+        <Rect x="14" y="14" width="7" height="7" rx="2" fill="white" stroke="white" strokeWidth="1"/>
+      </Svg>
+    );
   };
 
   const getAuctionImage = (category: string, reason: string = '') => {
@@ -139,6 +160,17 @@ export const AnimatedAuctionCard: React.FC<AnimatedAuctionCardProps> = ({ item, 
       'bankruptcy': 'Concurso',
     };
     return reasonMap[reason] || reason;
+  };
+
+  const getLotsImage = (index: number) => {
+    const images = [
+      require('@/assets/images/lotes/20250507_161917.jpg'),
+      require('@/assets/images/lotes/IMG_20240712_110157.jpg'),
+      require('@/assets/images/lotes/IMG_20241121_153844.jpg'),
+      require('@/assets/images/lotes/IMG_20250322_135930356_HDR.jpg'),
+      require('@/assets/images/lotes/buick 12.jpg'),
+    ];
+    return images[index % images.length];
   };
 
   const formatDate = (dateString: string) => {
@@ -183,19 +215,21 @@ export const AnimatedAuctionCard: React.FC<AnimatedAuctionCardProps> = ({ item, 
           backgroundColor: colors.cardBackground,
           shadowColor: colors.shadowDark,
         }]}>
-          {/* Category Icon and Status */}
+          {/* Auction Title and Status */}
           <View style={styles.cardHeader}>
             <View style={styles.categorySection}>
-              <View style={[styles.categoryIcon, { backgroundColor: getCategoryColor(item.category) }]}>
-                <Text style={styles.categoryEmoji}>{getCategoryIcon(item.category)}</Text>
+              <View style={[styles.categoryIcon, { backgroundColor: '#26B4E4' }]}>
+                {getCategoryIcon(item.category)}
               </View>
               <View style={styles.categoryInfo}>
                 <Text style={[styles.categoryText, { color: colors.text }]}>
                   {item.category.toUpperCase()}
                 </Text>
-                <Text style={[styles.reasonText, { color: colors.secondary }]}>
-                  {getReasonText(item.reason || '')}
-                </Text>
+                {item.reason && (
+                  <Text style={[styles.reasonText, { color: colors.secondary }]}>
+                    {item.reason}
+                  </Text>
+                )}
               </View>
             </View>
             
@@ -204,39 +238,32 @@ export const AnimatedAuctionCard: React.FC<AnimatedAuctionCardProps> = ({ item, 
             </View>
           </View>
 
-          {/* Title */}
-          <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>
-            {item.title}
-          </Text>
-
-          {/* Location and Date Info */}
-          <View style={styles.infoSection}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoIcon}>📍</Text>
-              <Text style={[styles.infoText, { color: colors.secondary }]} numberOfLines={1}>
-                {item.location}
-              </Text>
+          {/* Layout horizontal: Imagen cuadrada + Contenido */}
+          <View style={styles.cardBody}>
+            {/* Imagen cuadrada con label de lotes */}
+            <View style={styles.imageContainer}>
+              <Image
+                source={getLotsImage(index)}
+                style={styles.squareImage}
+                contentFit="cover"
+              />
+              <View style={[styles.lotsLabel, { backgroundColor: '#FF4444' }]}>
+                <Text style={styles.lotsText}>{item.lots_count} lotes</Text>
+              </View>
             </View>
-            
-            <View style={styles.infoRow}>
-              <Text style={styles.infoIcon}>📅</Text>
-              <Text style={[styles.infoText, { color: colors.secondary }]}>
-                {item.status.toLowerCase() === 'activa' 
-                  ? `Termina: ${formatDate(item.end_date)}`
-                  : `Inicia: ${formatDate(item.start_date)}`
-                }
-              </Text>
-            </View>
-          </View>
 
-          {/* Registration Fee - Large Number */}
-          <View style={[styles.feeSection, { backgroundColor: colors.surface }]}>
-            <Text style={[styles.feeLabel, { color: colors.secondary }]}>
-              INSCRIPCIÓN
-            </Text>
-            <Text style={[styles.feeAmount, { color: getStatusColor(item.status) }]}>
-              {formatCurrency(item.registration_fee)}
-            </Text>
+            {/* Contenido a la derecha */}
+            <View style={styles.contentContainer}>
+              {/* Información de fecha */}
+              <View style={styles.infoSection}>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoIcon}>📅</Text>
+                  <Text style={[styles.infoText, { color: colors.secondary }]}>
+                    {item.start_date}
+                  </Text>
+                </View>
+              </View>
+            </View>
           </View>
 
           {/* Progress Bar for Active Auctions */}
@@ -291,6 +318,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+  },
+  titleSection: {
+    flex: 1,
+    marginRight: 12,
+  },
+  auctionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 22,
   },
   categoryIcon: {
     width: 48,
@@ -385,5 +421,48 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
+  },
+  imageContainer: {
+    position: 'relative',
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  squareImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
+  cardBody: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 12,
+    gap: 12,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  imageWrapper: {
+    width: '100%',
+    height: 120,
+    borderRadius: 8,
+    backgroundColor: '#f0f0f0',
+  },
+  lotsLabel: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    zIndex: 1,
+  },
+  lotsText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });

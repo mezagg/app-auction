@@ -278,6 +278,327 @@ async def init_sample_data():
             item = AuctionItem(**item_data)
             await db.auction_items.insert_one(item.dict(by_alias=True, exclude={"id"}))
 
+async def seed_custom_auctions():
+    """
+    Inserta (si no existen) las subastas solicitadas por el usuario junto con sus lotes,
+    usando IDs determinísticos para evitar duplicados.
+    """
+    # Subasta: Gran Subasta Multimarcas (Webcast) - Jueves 9 de octubre de 2025, termina viernes
+    multimarcas_id = "multimarcas-2025-10-09"
+    existing_multimarcas = await db.auctions.find_one({"auction_id": multimarcas_id})
+    if not existing_multimarcas:
+        multimarcas_auction = Auction(
+            auction_id=multimarcas_id,
+            title="Gran Subasta Multimarcas",
+            description=(
+                "Webcast | Motocicletas · Automóviles · Rines · Refacciones · Camionetas · "
+                "Tractocamiones · Camiones · Cajas Secas · Equipo de Minería · Equipo de Construcción · "
+                "Maquinaría Amarilla y mucho más. Inspecciones disponibles: Del 6 al 8 de octubre."
+            ),
+            reason="renovacion_flotilla",
+            company_name="Hilco Global México",
+            start_date=datetime(2025, 10, 9, 11, 0),
+            end_date=datetime(2025, 10, 10, 18, 0),
+            status="proxima",
+            location="Vía webcast",
+            state="Jalisco",
+            total_items=0,
+            registration_fee=500.0,
+        )
+        await db.auctions.insert_one(multimarcas_auction.dict(by_alias=True, exclude={"id"}))
+
+        # Lotes Nissan Tsuru
+        base64_placeholder = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        multimarcas_items = [
+            {
+                "name": "Nissan Tsuru | 2012",
+                "description": "Automóvil compacto. Estado general bueno. Incluye documentación básica.",
+                "category": "vehiculos",
+                "subcategory": "automoviles",
+                "brand": "Nissan",
+                "model": "Tsuru",
+                "year": 2012,
+                "starting_price": 30000.0,
+                "current_bid": 30000.0,
+                "estimated_value": {"min": 28000, "max": 35000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"estado_lote": "VENDIDO", "numero_lote": "11"},
+                "location": "Jalisco",
+                "auction_id": multimarcas_id,
+            },
+            {
+                "name": "Nissan Tsuru | 2013",
+                "description": "Automóvil compacto. Estado general bueno. Incluye documentación básica.",
+                "category": "vehiculos",
+                "subcategory": "automoviles",
+                "brand": "Nissan",
+                "model": "Tsuru",
+                "year": 2013,
+                "starting_price": 35000.0,
+                "current_bid": 35000.0,
+                "estimated_value": {"min": 32000, "max": 38000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"estado_lote": "VENDIDO", "numero_lote": "11A"},
+                "location": "Jalisco",
+                "auction_id": multimarcas_id,
+            },
+            {
+                "name": "Nissan Tsuru | 2014",
+                "description": "Automóvil compacto. Estado general bueno. Incluye documentación básica.",
+                "category": "vehiculos",
+                "subcategory": "automoviles",
+                "brand": "Nissan",
+                "model": "Tsuru",
+                "year": 2014,
+                "starting_price": 40000.0,
+                "current_bid": 40000.0,
+                "estimated_value": {"min": 38000, "max": 45000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"estado_lote": "VENDIDO", "numero_lote": "12"},
+                "location": "Jalisco",
+                "auction_id": multimarcas_id,
+            },
+            {
+                "name": "Nissan Tsuru | 2013",
+                "description": "Automóvil compacto. Estado general bueno. Incluye documentación básica.",
+                "category": "vehiculos",
+                "subcategory": "automoviles",
+                "brand": "Nissan",
+                "model": "Tsuru",
+                "year": 2013,
+                "starting_price": 35000.0,
+                "current_bid": 35000.0,
+                "estimated_value": {"min": 32000, "max": 38000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"estado_lote": "VENDIDO", "numero_lote": "13"},
+                "location": "Jalisco",
+                "auction_id": multimarcas_id,
+            },
+            {
+                "name": "Nissan Tsuru | 2014",
+                "description": "Automóvil compacto. Estado general bueno. Incluye documentación básica.",
+                "category": "vehiculos",
+                "subcategory": "automoviles",
+                "brand": "Nissan",
+                "model": "Tsuru",
+                "year": 2014,
+                "starting_price": 40000.0,
+                "current_bid": 40000.0,
+                "estimated_value": {"min": 38000, "max": 45000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"estado_lote": "VENDIDO", "numero_lote": "14"},
+                "location": "Jalisco",
+                "auction_id": multimarcas_id,
+            },
+            {
+                "name": "Nissan Tsuru | 2015",
+                "description": "Automóvil compacto. Estado general bueno. Incluye documentación básica.",
+                "category": "vehiculos",
+                "subcategory": "automoviles",
+                "brand": "Nissan",
+                "model": "Tsuru",
+                "year": 2015,
+                "starting_price": 45000.0,
+                "current_bid": 45000.0,
+                "estimated_value": {"min": 43000, "max": 50000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"estado_lote": "VENDIDO", "numero_lote": "15"},
+                "location": "Jalisco",
+                "auction_id": multimarcas_id,
+            },
+            {
+                "name": "Nissan Tsuru | 2012",
+                "description": "Automóvil compacto. Estado general bueno. Incluye documentación básica.",
+                "category": "vehiculos",
+                "subcategory": "automoviles",
+                "brand": "Nissan",
+                "model": "Tsuru",
+                "year": 2012,
+                "starting_price": 30000.0,
+                "current_bid": 30000.0,
+                "estimated_value": {"min": 28000, "max": 35000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"estado_lote": "VENDIDO", "numero_lote": "16"},
+                "location": "Jalisco",
+                "auction_id": multimarcas_id,
+            },
+        ]
+
+        for item in multimarcas_items:
+            await db.auction_items.insert_one(AuctionItem(**item).dict(by_alias=True, exclude={"id"}))
+        await db.auctions.update_one({"auction_id": multimarcas_id}, {"$set": {"total_items": len(multimarcas_items)}})
+
+    # Subasta: Cierre de Planta Pacific Aquaculture - Jueves 16 de octubre de 2025 11:00 hrs
+    pacific_id = "pacific-aquaculture-2025-10-16"
+    existing_pacific = await db.auctions.find_one({"auction_id": pacific_id})
+    if not existing_pacific:
+        pacific_auction = Auction(
+            auction_id=pacific_id,
+            title="Gran Subasta por Cierre de Planta Pacific Aquaculture",
+            description=(
+                "Presencial y por Internet | City Express Plus Ensenada. "
+                "Inspecciones disponibles: Del 13 al 15 de octubre."
+            ),
+            reason="cierre_empresa",
+            company_name="Pacific Aquaculture",
+            start_date=datetime(2025, 10, 16, 11, 0),
+            end_date=datetime(2025, 10, 16, 18, 0),
+            status="proxima",
+            location="City Express Plus Ensenada",
+            state="Baja California",
+            total_items=0,
+            registration_fee=300.0,
+        )
+        await db.auctions.insert_one(pacific_auction.dict(by_alias=True, exclude={"id"}))
+
+        base64_placeholder = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        pacific_items = [
+            {
+                "name": "Lote De Herramientas Manuales",
+                "description": "Conjunto de herramientas manuales varias.",
+                "category": "herramientas",
+                "subcategory": "manuales",
+                "brand": "Varias",
+                "model": None,
+                "year": None,
+                "starting_price": 1.0,
+                "current_bid": 1.0,
+                "estimated_value": {"min": 1000, "max": 3000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"precio_reservado": True, "numero_lote": "Lote 2"},
+                "location": "Baja California",
+                "auction_id": pacific_id,
+            },
+            {
+                "name": "Lote De Herramientas Eléctricas",
+                "description": "Taladros, sierras y equipos eléctricos variados.",
+                "category": "herramientas",
+                "subcategory": "electricas",
+                "brand": "Varias",
+                "model": None,
+                "year": None,
+                "starting_price": 1.0,
+                "current_bid": 1.0,
+                "estimated_value": {"min": 3000, "max": 8000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"precio_reservado": True, "numero_lote": "Lote 4"},
+                "location": "Baja California",
+                "auction_id": pacific_id,
+            },
+            {
+                "name": "Lote De Herramientas Eléctricas",
+                "description": "Equipamiento eléctrico adicional: esmeriladoras, sierras orbitales.",
+                "category": "herramientas",
+                "subcategory": "electricas",
+                "brand": "Varias",
+                "model": None,
+                "year": None,
+                "starting_price": 1.0,
+                "current_bid": 1.0,
+                "estimated_value": {"min": 2500, "max": 7000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"precio_reservado": True, "numero_lote": "Lote 5"},
+                "location": "Baja California",
+                "auction_id": pacific_id,
+            },
+            {
+                "name": "Soldadora Eléctrica Lincoln Electric WELD-PAK 140 HD",
+                "description": "Soldadora MIG compacta para trabajos ligeros y medianos.",
+                "category": "maquinaria",
+                "subcategory": "soldadoras",
+                "brand": "Lincoln Electric",
+                "model": "WELD-PAK 140 HD",
+                "year": None,
+                "starting_price": 1.0,
+                "current_bid": 1.0,
+                "estimated_value": {"min": 8000, "max": 15000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"precio_reservado": True, "numero_lote": "SLote 6"},
+                "location": "Baja California",
+                "auction_id": pacific_id,
+            },
+            {
+                "name": "Lote De Equipos Varios",
+                "description": "Mezcla de equipos y accesorios para pesca/cultivo.",
+                "category": "equipos",
+                "subcategory": "varios",
+                "brand": "Varias",
+                "model": None,
+                "year": None,
+                "starting_price": 1.0,
+                "current_bid": 1.0,
+                "estimated_value": {"min": 2000, "max": 6000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"precio_reservado": True, "numero_lote": "LLote 7"},
+                "location": "Baja California",
+                "auction_id": pacific_id,
+            },
+            {
+                "name": "Sierra De Mesa Ryobi RTS11",
+                "description": "Sierra de mesa para cortes precisos en madera.",
+                "category": "herramientas",
+                "subcategory": "sierras",
+                "brand": "Ryobi",
+                "model": "RTS11",
+                "year": None,
+                "starting_price": 1.0,
+                "current_bid": 1.0,
+                "estimated_value": {"min": 4000, "max": 9000},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"precio_reservado": True, "numero_lote": "SLote 8"},
+                "location": "Baja California",
+                "auction_id": pacific_id,
+            },
+            {
+                "name": "Lote De Herramientas Manuales",
+                "description": "Conjunto adicional de herramientas manuales.",
+                "category": "herramientas",
+                "subcategory": "manuales",
+                "brand": "Varias",
+                "model": None,
+                "year": None,
+                "starting_price": 1.0,
+                "current_bid": 1.0,
+                "estimated_value": {"min": 1200, "max": 3500},
+                "images": [base64_placeholder],
+                "condition": "bueno",
+                "mileage": None,
+                "specifications": {"precio_reservado": True, "numero_lote": "LLote 9"},
+                "location": "Baja California",
+                "auction_id": pacific_id,
+            },
+        ]
+
+        for item in pacific_items:
+            await db.auction_items.insert_one(AuctionItem(**item).dict(by_alias=True, exclude={"id"}))
+        await db.auctions.update_one({"auction_id": pacific_id}, {"$set": {"total_items": len(pacific_items)}})
+
 # Auth endpoints
 @api_router.post("/auth/register", response_model=Token)
 async def register_user(user_data: UserRegister):
@@ -434,6 +755,7 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup_event():
     await init_sample_data()
+    await seed_custom_auctions()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

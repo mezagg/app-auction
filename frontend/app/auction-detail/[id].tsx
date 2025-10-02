@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -17,12 +18,14 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { auctionService, Auction, AuctionItem } from '@/services/auctionService';
-import { FlashList } from '@shopify/flash-list';
 
 export default function AuctionDetailScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { width } = useWindowDimensions();
+  const numColumns = width >= 1200 ? 4 : width >= 800 ? 3 : 2;
+  const columnWidthPercent = numColumns >= 4 ? '24%' : numColumns === 3 ? '32%' : '48%';
   
   const [auction, setAuction] = useState<Auction | null>(null);
   const [items, setItems] = useState<AuctionItem[]>([]);
@@ -287,15 +290,58 @@ export default function AuctionDetailScreen() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             Artículos en Subasta ({items.length})
           </Text>
-          
-          <FlashList
-            data={items}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.item_id}
-            estimatedItemSize={140}
-            scrollEnabled={false}
-            showsVerticalScrollIndicator={false}
-          />
+          <View style={styles.gridContainer}>
+            {items.map((item) => (
+              <TouchableOpacity
+                key={item.item_id}
+                style={[styles.itemCard, { width: columnWidthPercent, backgroundColor: colors.cardBackground }]}
+                onPress={() => router.push(`/item-detail/${item.item_id}`)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.itemHeader}>
+                  <View style={styles.itemInfo}>
+                    <Text style={[styles.itemName, { color: colors.text }]} numberOfLines={2}>
+                      {item.name}
+                    </Text>
+                    <Text style={[styles.itemBrand, { color: colors.tint }]}>
+                      {item.brand} {item.model && `• ${item.model}`} {item.year && `• ${item.year}`}
+                    </Text>
+                  </View>
+                  <View style={styles.categoryBadge}>
+                    <Text style={[styles.categoryText, { color: colors.text }]}>
+                      {getCategoryText(item.category)}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.priceContainer}>
+                  <View style={styles.priceItem}>
+                    <Text style={[styles.priceLabel, { color: colors.text }]}>Precio Inicial</Text>
+                    <Text style={[styles.startingPrice, { color: colors.text }]}>
+                      ${item.starting_price.toLocaleString('es-MX')}
+                    </Text>
+                  </View>
+                  <View style={styles.priceItem}>
+                    <Text style={[styles.priceLabel, { color: colors.text }]}>Puja Actual</Text>
+                    <Text style={[styles.currentBid, { color: colors.success }]}>
+                      ${item.current_bid.toLocaleString('es-MX')}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.itemFooter}>
+                  <Text style={[styles.conditionText, { color: colors.text }]}>
+                    Estado: {getConditionText(item.condition)}
+                  </Text>
+                  {item.mileage && (
+                    <Text style={[styles.mileageText, { color: colors.text }]}>
+                      {item.mileage.toLocaleString('es-MX')} km
+                    </Text>
+                  )}
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </ScrollView>
 
@@ -457,9 +503,19 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
+  gridContent: {
+    paddingBottom: 8,
+  },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
   itemCard: {
+    flex: 1,
+    minWidth: 0,
     padding: 16,
     borderRadius: 12,
+    marginHorizontal: 6,
     marginBottom: 12,
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.1)',

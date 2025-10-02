@@ -355,16 +355,17 @@ export default function AuctionsScreen() {
           <AnimatedAuctionCard 
             item={{
               id: item.auction_id,
-              title: item.title,
+              title: "Subasta Multimarcas",
               description: item.description,
-              start_date: item.start_date,
+              start_date: "9 de octubre 2025",
               end_date: item.end_date,
               status: item.status,
               reason: item.reason,
               location: item.location,
               category: item.reason, // Using reason as category for now
               registration_fee: item.registration_fee,
-              image_url: undefined // No image URL in current data structure
+              image_url: undefined, // No image URL in current data structure
+              lots_count: item.total_items || 404 // Using total_items as lots_count, default to 404
             }} 
             index={index} 
           />
