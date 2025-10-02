@@ -177,32 +177,8 @@ export default function AuctionsScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchAuctions();
+    loadAuctions().finally(() => setRefreshing(false));
   }, []);
-
-  const fetchAuctions = async () => {
-    try {
-      setLoading(true);
-      const data = await auctionService.getAuctions();
-      
-      // Animación para la lista completa al cargar
-      const fadeAnim = new Animated.Value(0);
-      setAuctions(data);
-      filterAuctions(data, activeFilter);
-      
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true
-      }).start();
-      
-    } catch (error) {
-      console.error('Error fetching auctions:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -346,7 +322,7 @@ export default function AuctionsScreen() {
           <View style={styles.centerContent}>
             <Animated.View style={[styles.logoContainer, { opacity: logoOpacity }]}>
               <Image
-                source={require('@/assets/images/logo.png')}
+                source={require('@/assets/images/logo-bco.svg')}
                 style={styles.logo}
                 contentFit="contain"
               />
@@ -502,8 +478,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 120,
+    height: 40,
     marginRight: 12,
   },
   headerTextContainer: {
