@@ -17,10 +17,10 @@ interface FilterTabsProps {
 }
 
 const filterOptions = [
-  { key: 'todas' as FilterType, label: 'Todas', icon: '🏠' },
-  { key: 'proximas' as FilterType, label: 'Próximas', icon: '⏰' },
-  { key: 'anteriores' as FilterType, label: 'Anteriores', icon: '📋' },
-  { key: 'negociadas' as FilterType, label: 'Venta Negociada', icon: '🤝' },
+  { key: 'todas' as FilterType, label: 'Todas' },
+  { key: 'proximas' as FilterType, label: 'Próximas' },
+  { key: 'anteriores' as FilterType, label: 'Anteriores' },
+  { key: 'negociadas' as FilterType, label: 'Venta Negociada' },
 ];
 
 export const FilterTabs: React.FC<FilterTabsProps> = ({
@@ -69,7 +69,6 @@ export const FilterTabs: React.FC<FilterTabsProps> = ({
               onPress={() => onFilterChange(option.key)}
               activeOpacity={0.8}
             >
-              <Text style={styles.icon}>{option.icon}</Text>
               <Text
                 style={[
                   styles.label,
@@ -104,11 +103,12 @@ const styles = StyleSheet.create({
   filterTab: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 16,
     borderWidth: 1,
-    minWidth: 120,
+    minWidth: 100,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -117,13 +117,10 @@ const styles = StyleSheet.create({
     elevation: 4,
     position: 'relative',
   },
-  icon: {
-    fontSize: 16,
-    marginRight: 8,
-  },
   label: {
     fontSize: 14,
     letterSpacing: 0.3,
+    textAlign: 'center',
   },
   activeIndicator: {
     position: 'absolute',

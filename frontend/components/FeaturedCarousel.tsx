@@ -157,7 +157,7 @@ export const FeaturedCarousel: React.FC = () => {
                 {item.location && (
                   <View style={styles.locationContainer}>
                     <Text style={styles.locationIcon}>📍</Text>
-                    <Text style={[styles.location, { color: colors.secondary }]} numberOfLines={1}>
+                    <Text style={[styles.location, { color: colors.secondary }]} numberOfLines={2}>
                       {item.location}
                     </Text>
                   </View>
